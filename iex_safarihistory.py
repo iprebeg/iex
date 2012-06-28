@@ -8,18 +8,26 @@ import shutil
 import sys
 import os
 
+import urlparse
+import re, urllib
+
 class iExSafariHistory(iExBase):
 
-	dbfile = "/Volumes/Data/wireless/Library/CallHistory/call_history.db"
+	dbfile = "/Volumes/Data/mobile/Library/Safari/History.plist"
 
 	def db_print(self):
 		self.db_init()
-		con = lite.connect(self.tmpdbfile)
-		with con:
-			cur = con.cursor()
-			cur.execute("SELECT * from call")
-			rows = cur.fetchall()
-			for row in rows:
-				print row
-		
+
+		f = open(self.tmpdbfile, 'r')
+		#print f.read()
+
+
+		GRUBER_URLINTEXT_PAT = re.compile(ur'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?\xab\xbb\u201c\u201d\u2018\u2019]))')
+
+		line = f.read()
+		urls = [ mgroups[0] for mgroups in GRUBER_URLINTEXT_PAT.findall(line) ]
+
+		for url in urls:
+			print url
+
 		self.db_clean()
